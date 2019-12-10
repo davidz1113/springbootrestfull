@@ -2,8 +2,11 @@ package com.restfull.service;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.restfull.converter.NotaConverter;
@@ -21,12 +24,17 @@ public class NotaService {
 	@Autowired
 	@Qualifier("notaconverter")
 	private NotaConverter convertidor;
+	
+	private static final Log logger = LogFactory.getLog(NotaService.class);
 
 	public boolean crearNota(NotaEntity nota) {
+		logger.info("Creando Nota");
 		try {
 			repository.save(nota);
+			logger.info("Nota creada");
 			return true;
 		} catch (Exception e) {
+			logger.error("Nota NO creada");
 			// TODO: handle exception
 			return false;
 		}
@@ -71,4 +79,8 @@ public class NotaService {
 		return convertidor.convertirLista(repository.findByTitulo(titulo));
 	}
 
+	
+	public List<Nota> obtenerPorPaginacion(Pageable pageable){
+			return convertidor.convertirLista(repository.findAll(pageable).getContent());
+	}
 }
